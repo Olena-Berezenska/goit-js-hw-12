@@ -39,7 +39,7 @@ function imageSTemplate(images) {
 
 export function renderImages(images) {
   const markup = imageSTemplate(images);
-  container.innerHTML = markup;
+  container.insertAdjacentHTML('beforeend', markup);
   gallery.refresh();
 }
 

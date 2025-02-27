@@ -13,9 +13,19 @@
         <input type="text" name="imgSearch" placeholder="Search images..." />
         <button type="submit" class="btn btn-search">Search</button>
       </form>
-      <div class="loader" style="display: none"></div>
     </div>
     <ul class="gallery"></ul>
+    <div class="btn-load-wrapper">
+      <button
+        type="button"
+        class="btn btn-primary button js-btn-load hidden"
+        data-action="load-more"
+      >
+        <span class="label">Load more</span>
+      </button>
+    </div>
+    <div class="loader" style="display: none"></div>
+
     <script type="module" src="./main.js"></script>
   </body>
 </html>
