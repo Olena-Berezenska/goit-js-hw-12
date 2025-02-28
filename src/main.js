@@ -4,10 +4,9 @@ import { renderImages } from './js/render-functions.js';
 
 const refs = {
   InputData: document.querySelector('.js-form-inline'),
-  loader: document.querySelector('.loader'),
   gallery: document.querySelector('.gallery'),
   btnLoadMore: document.querySelector('.js-btn-load'),
-  loadElem: document.querySelector('.js-loader'),
+  loadElem: document.querySelector('.loader'),
 };
 
 let currentPage = 1;
@@ -18,31 +17,36 @@ refs.InputData.addEventListener('submit', handleInputData);
 
 async function handleInputData(e) {
   e.preventDefault();
+  showSpinner('form');
+  currentPage = 1;
   const searchData = new FormData(e.target);
-  const searchDatavalue = searchData.get('imgSearch');
+  const searchDatavalue = searchData.get('imgSearch').trim();
   searchQuery = searchDatavalue;
   if (!searchDatavalue) return;
   refs.gallery.innerHTML = '';
-  refs.loader.style.display = 'block';
   try {
     const { images, total } = await getImages(searchDatavalue, currentPage);
     totalPages = total;
     console.log(totalPages);
     renderImages(images);
+    hideSpinner();
+    checkBtnStatus();
   } catch (error) {
+    refs.btnLoadMore.classList.add('hidden');
+    refs.loadElem.classList.add('hidden');
     console.log('Handled error', error);
   } finally {
-    refs.loader.style.display = 'none';
     e.target.reset();
   }
-  checkBtnStatus();
 }
 //==========================================
 refs.btnLoadMore.addEventListener('click', loadMore);
 async function loadMore() {
+  showSpinner('button');
   currentPage += 1;
   const { images, total } = await getImages(searchQuery, currentPage);
   renderImages(images);
+  hideSpinner();
   checkBtnStatus();
   const info = refs.gallery.firstElementChild.getBoundingClientRect();
   const height = info.height;
@@ -67,4 +71,20 @@ function checkBtnStatus() {
   } else {
     refs.btnLoadMore.classList.remove('hidden');
   }
+}
+function showSpinner(position) {
+  refs.loadElem.classList.remove('hidden');
+
+  if (position === 'form') {
+    refs.loadElem.style.margin = '10px auto';
+    refs.InputData.after(refs.loadElem);
+  } else if (position === 'button') {
+    refs.btnLoadMore.classList.add('hidden');
+    refs.btnLoadMore.before(refs.loadElem);
+  }
+}
+
+function hideSpinner() {
+  refs.loadElem.classList.add('hidden');
+  refs.btnLoadMore.classList.remove('hidden');
 }
