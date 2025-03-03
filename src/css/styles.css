@@ -168,6 +168,7 @@ ul {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative; /* Додає контекст для абсолютного позиціонування */
 }
 .hidden {
   display: none;

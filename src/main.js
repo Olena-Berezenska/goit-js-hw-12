@@ -22,7 +22,10 @@ async function handleInputData(e) {
   const searchData = new FormData(e.target);
   const searchDatavalue = searchData.get('imgSearch').trim();
   searchQuery = searchDatavalue;
-  if (!searchDatavalue) return;
+  if (!searchDatavalue) {
+    refs.loadElem.classList.add('hidden');
+    return;
+  }
   refs.gallery.innerHTML = '';
   try {
     const { images, total } = await getImages(searchDatavalue, currentPage);
@@ -44,22 +47,27 @@ refs.btnLoadMore.addEventListener('click', loadMore);
 async function loadMore() {
   showSpinner('button');
   currentPage += 1;
-  const { images, total } = await getImages(searchQuery, currentPage);
-  renderImages(images);
-  hideSpinner();
-  checkBtnStatus();
-  const info = refs.gallery.firstElementChild.getBoundingClientRect();
-  const height = info.height;
-  window.scrollBy({
-    top: height * 2,
-    behavior: 'smooth',
-  });
+  try {
+    const { images, total } = await getImages(searchQuery, currentPage);
+    renderImages(images);
+    checkBtnStatus();
+    const info = refs.gallery.firstElementChild.getBoundingClientRect();
+    const height = info.height;
+    window.scrollBy({
+      top: height * 2,
+      behavior: 'smooth',
+    });
+  } catch (error) {
+    console.error('Load more error:', error);
+  } finally {
+    hideSpinner();
+  }
 }
 
 //=============================================
 function checkBtnStatus() {
   const maxPage = Math.ceil(totalPages / PER_PAGE);
-  const isLastPage = maxPage <= currentPage;
+  const isLastPage = currentPage >= maxPage;
   console.log(isLastPage);
   if (isLastPage) {
     refs.btnLoadMore.classList.add('hidden');
@@ -79,12 +87,14 @@ function showSpinner(position) {
     refs.loadElem.style.margin = '10px auto';
     refs.InputData.after(refs.loadElem);
   } else if (position === 'button') {
+    console.log('spinerOn');
     refs.btnLoadMore.classList.add('hidden');
-    refs.btnLoadMore.before(refs.loadElem);
+    // refs.btnLoadMore.insertAdjacentElement('beforebegin', refs.loadElem);
   }
 }
 
 function hideSpinner() {
   refs.loadElem.classList.add('hidden');
   refs.btnLoadMore.classList.remove('hidden');
+  checkBtnStatus();
 }
