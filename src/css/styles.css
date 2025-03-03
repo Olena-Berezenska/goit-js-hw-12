@@ -147,8 +147,19 @@ ul {
     transform: rotate(360deg);
   }
 }
-.header.horizont-box {
-  position: relative; /* робимо контейнер позиційованим */
+
+.hidden {
+  display: none;
+}
+
+.js-btn-load.loading {
+  display: none;
+}
+
+.btn-load-wrapper {
+  display: flex;
+  justify-content: center;
+  position: relative;
 }
 .js-btn-load {
   height: 100%;
@@ -163,14 +174,4 @@ ul {
   background: #4e75ff;
   border: none;
   margin-top: 20px;
-}
-.btn-load-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative; /* Додає контекст для абсолютного позиціонування */
-}
-.hidden {
-  display: none;
-  opacity: 0;
 }

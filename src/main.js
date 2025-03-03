@@ -18,6 +18,7 @@ refs.InputData.addEventListener('submit', handleInputData);
 async function handleInputData(e) {
   e.preventDefault();
   showSpinner('form');
+  refs.btnLoadMore.classList.add('hidden'); // Приховуємо "Load More" при новому пошуку
   currentPage = 1;
   const searchData = new FormData(e.target);
   const searchDatavalue = searchData.get('imgSearch').trim();
@@ -35,8 +36,7 @@ async function handleInputData(e) {
     hideSpinner();
     checkBtnStatus();
   } catch (error) {
-    refs.btnLoadMore.classList.add('hidden');
-    refs.loadElem.classList.add('hidden');
+    hideSpinner();
     console.log('Handled error', error);
   } finally {
     e.target.reset();
@@ -46,10 +46,12 @@ async function handleInputData(e) {
 refs.btnLoadMore.addEventListener('click', loadMore);
 async function loadMore() {
   showSpinner('button');
+  refs.btnLoadMore.classList.add('hidden'); // Ховаємо кнопку
   currentPage += 1;
   try {
     const { images, total } = await getImages(searchQuery, currentPage);
     renderImages(images);
+    hideSpinner();
     checkBtnStatus();
     const info = refs.gallery.firstElementChild.getBoundingClientRect();
     const height = info.height;
@@ -59,9 +61,11 @@ async function loadMore() {
     });
   } catch (error) {
     console.error('Load more error:', error);
-  } finally {
     hideSpinner();
   }
+  // finally {
+  //   hideSpinner();
+  // }
 }
 
 //=============================================
@@ -84,17 +88,17 @@ function showSpinner(position) {
   refs.loadElem.classList.remove('hidden');
 
   if (position === 'form') {
+    refs.loadElem.style.position = 'relative';
     refs.loadElem.style.margin = '10px auto';
     refs.InputData.after(refs.loadElem);
   } else if (position === 'button') {
-    console.log('spinerOn');
-    refs.btnLoadMore.classList.add('hidden');
-    // refs.btnLoadMore.insertAdjacentElement('beforebegin', refs.loadElem);
+    refs.loadElem.style.position = 'absolute';
+    refs.loadElem.style.margin = '20px auto';
+    refs.btnLoadMore.after(refs.loadElem);
   }
 }
 
+// Функція приховування спінера
 function hideSpinner() {
   refs.loadElem.classList.add('hidden');
-  refs.btnLoadMore.classList.remove('hidden');
-  checkBtnStatus();
 }
